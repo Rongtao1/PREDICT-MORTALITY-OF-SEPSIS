@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="9.9.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="9.9.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="read_csv" compatibility="9.9.000" expanded="true" height="68" name="Read CSV" width="90" x="45" y="34">
+        <parameter key="csv_file" value="D:\RMIT-Project\First48H.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value=""/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="att1.true.integer.attribute"/>
+          <parameter key="1" value="HADM_ID.true.integer.attribute"/>
+          <parameter key="2" value="HEART RATE.true.real.attribute"/>
+          <parameter key="3" value="NBP MEAN.true.real.attribute"/>
+          <parameter key="4" value="NON INVASIVE BLOOD PRESSURE MEAN.true.polynominal.attribute"/>
+          <parameter key="5" value="RESPIRATORY RATE.true.real.attribute"/>
+          <parameter key="6" value="SPO2.true.real.attribute"/>
+          <parameter key="7" value="SUBJECT_ID.true.integer.attribute"/>
+          <parameter key="8" value="HOSPITAL_EXPIRE_FLAG.true.polynominal.attribute"/>
+          <parameter key="9" value="LOS.true.real.attribute"/>
+          <parameter key="10" value="ADMISSION_TYPE.true.polynominal.attribute"/>
+          <parameter key="11" value="DEXTROSE 5%.true.real.attribute"/>
+          <parameter key="12" value="NACL 0\.9%.true.real.attribute"/>
+          <parameter key="13" value="NOREPINEPHRINE.true.real.attribute"/>
+          <parameter key="14" value="PO INTAKE.true.real.attribute"/>
+          <parameter key="15" value="HEART RHYTHM.true.polynominal.attribute"/>
+          <parameter key="16" value="LEVEL OF CONSCIOUS.true.polynominal.attribute"/>
+          <parameter key="17" value="RESPIRATORY PATTERN.true.polynominal.attribute"/>
+          <parameter key="18" value="GENDER.true.polynominal.attribute"/>
+          <parameter key="19" value="age_group.true.polynominal.attribute"/>
+          <parameter key="20" value="age.true.real.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="true" class="model_simulator:universal_missing_value_handling" compatibility="9.9.000" expanded="true" height="103" name="Replace All Missings" width="90" x="246" y="34">
+        <parameter key="return_preprocessing_model" value="false"/>
+        <parameter key="create_view" value="false"/>
+        <parameter key="attribute_filter_type" value="subset"/>
+        <parameter key="attribute" value="PO INTAKE"/>
+        <parameter key="attributes" value="PO INTAKE|NON INVASIVE BLOOD PRESSURE MEAN|NOREPINEPHRINE|DEXTROSE 5%|NACL 0.9%"/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="set_role" compatibility="9.9.000" expanded="true" height="82" name="Set Role" width="90" x="380" y="34">
+        <parameter key="attribute_name" value="HOSPITAL_EXPIRE_FLAG"/>
+        <parameter key="target_role" value="label"/>
+        <list key="set_additional_roles"/>
+      </operator>
+      <operator activated="true" class="maratool:Sample (Balance)" compatibility="1.4.001" expanded="true" height="82" name="Sample (Balance)" width="90" x="514" y="34">
+        <parameter key="number_of_examples_per_class" value="600"/>
+        <parameter key="allow_downsampling" value="false"/>
+      </operator>
+      <operator activated="true" class="store" compatibility="9.9.000" expanded="true" height="68" name="Store" width="90" x="648" y="34">
+        <parameter key="repository_entry" value="//Local Repository/data/First48H_over"/>
+      </operator>
+      <connect from_op="Read CSV" from_port="output" to_op="Replace All Missings" to_port="example set input"/>
+      <connect from_op="Replace All Missings" from_port="example set output" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Sample (Balance)" to_port="example set input"/>
+      <connect from_op="Sample (Balance)" from_port="example set output" to_op="Store" to_port="input"/>
+      <connect from_op="Store" from_port="through" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="349" y="147">Type your comment</description>
+    </process>
+  </operator>
+</process>
